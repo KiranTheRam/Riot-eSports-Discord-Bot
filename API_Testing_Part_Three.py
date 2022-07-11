@@ -27,30 +27,30 @@ def tournament_url_builder(game, search_param):
 
 
 # This will create the API URL for getting team information. Can have a search parameter
-def team_url_builder(game, search_param):
-    if search_param:
-        url = "https://api.pandascore.co/" + game + "/teams?search[name]=" + search_param + "&sort=&page=1&per_page=50"
-        return url
-    url = "https://api.pandascore.co/" + game + "/teams?sort=&page=1&per_page=50"
-    return url
+# def team_url_builder(game, search_param):
+#     if search_param:
+#         url = "https://api.pandascore.co/" + game + "/teams?search[name]=" + search_param + "&sort=&page=1&per_page=50"
+#         return url
+#     url = "https://api.pandascore.co/" + game + "/teams?sort=&page=1&per_page=50"
+#     return url
 
 
 # This will create the API URL for getting player information. Can have a search parameter
-def player_url_builder(game, search_param):
-    if search_param:
-        url = "https://api.pandascore.co/" + game + "/players?search[name]=" + search_param + "&sort=&page=1&per_page=50"
-        return url
-    url = "https://api.pandascore.co/" + game + "/players?sort=&page=1&per_page=50"
-    return url
-
-
-# This will create the API URL for getting team information. Can have a search parameter
-# def url_builder(game, context, search_param):
+# def player_url_builder(game, search_param):
 #     if search_param:
 #         url = "https://api.pandascore.co/" + game + "/players?search[name]=" + search_param + "&sort=&page=1&per_page=50"
 #         return url
 #     url = "https://api.pandascore.co/" + game + "/players?sort=&page=1&per_page=50"
 #     return url
+
+
+# This will be the universal API URL builder.
+def url_builder(game, context, search_param):
+    if search_param:
+        url = "https://api.pandascore.co/" + game + "/" + context + "?search[name]=" + search_param + "&sort=&page=1&per_page=50"
+        return url
+    url = "https://api.pandascore.co/" + game + "/players?sort=&page=1&per_page=50"
+    return url
 
 
 ###########################################################################################################
@@ -60,8 +60,10 @@ def player_url_builder(game, search_param):
 # Displays all the players. Can search for a specific player.
 def get_player_info():
     game = input("Enter the game to search for: ")
+    context = 'players'
     search_param = input("Enter a player to search for.\nLeave blank to see all players:  ")
-    url = player_url_builder(game, search_param)
+    # url = player_url_builder(game, search_param)
+    url = url_builder(game, context, search_param)
     players_dict = build_dict(url)
 
     for player in players_dict:
@@ -80,13 +82,18 @@ def get_player_info():
 # TODO: Replace name and functionality for clarity. This function can get all information abut a tournament, not just teams in a tournament
 def get_tournament_info():
     game = input("Enter the game to search for: ")
+    # context = input("Enter the context to search for: ")
     search_param = input("Enter a tournament to search for.\nLeave blank to see all currently running tournaments:  ")
     url = tournament_url_builder(game, search_param)
-    val_tournaments_dict = build_dict(url)
+    # url = url_builder(game, context, search_param)
+    tournaments_dict = build_dict(url)
 
-    for tournament in val_tournaments_dict:
+    print(tournaments_dict)
+
+    for tournament in tournaments_dict:
         # TODO: Replace this print with something for the bot
-        print("\n\nTournament: ", tournament['slug'], tournament['league']['image_url'], "\nParticipating Teams: ")
+        print("\n\nTournament: ", tournament['league']['name'], tournament['league']['image_url'],
+              "\nParticipating Teams: ")
 
         for team in tournament['teams']:
             # TODO: Replace this print with something for the bot
@@ -96,8 +103,9 @@ def get_tournament_info():
 # Displays all information about teams
 def get_team_info():
     game = input("Enter the game to search for: ")
+    context = 'teams'
     search_param = input("Enter a team to search for.\nLeave blank to see all currently active teams:  ")
-    url = team_url_builder(game, search_param)
+    url = url_builder(game, context, search_param)
     teams_dict = build_dict(url)
 
     for team in teams_dict:
@@ -123,5 +131,5 @@ if __name__ == '__main__':
     #     get_player_info()
 
     # get_tournament_info()
-    # get_team_info()
-    get_player_info()
+    get_team_info()
+    # get_player_info()
