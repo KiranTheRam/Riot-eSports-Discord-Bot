@@ -32,6 +32,26 @@ def val_team_url_builder(search_param):
     url = "https://api.pandascore.co/valorant/teams?sort=&page=1&per_page=50"
     return url
 
+# This will create the API URL for getting team information. Can have a search parameter
+# TODO: Add search parameter functionality
+def val_player_url_builder(search_param):
+    if search_param:
+        url = "https://api.pandascore.co/valorant/players?search[name]=" + search_param + "&sort=&page=1&per_page=50"
+        return url
+    url = "https://api.pandascore.co/valorant/players?sort=&page=1&per_page=50"
+    return url
+
+
+# Displays all the players. Can search for a specific player.
+# TODO: Replace name and functionality for clarity. This function can get all information abut a tournament, not just teams in a tournament
+def get_valorant_player():
+    search_param = input("Enter a player to search for.\nLeave blank to see all players:  ")
+    url = val_player_url_builder(search_param)
+    val_players_dict = build_dict(url)
+
+    for player in val_players_dict:
+        print("     ", player['name'], ": ", player['first_name'], player['last_name'], "| Team: ", player['current_team']['name'], "| Age: ", player['age'],
+              "| Hometown: ", player['hometown'], "| Nationality : ", player['nationality'])
 
 
 # Displays all the teams participating in tournaments. Can search for a specific tournament.
@@ -73,11 +93,11 @@ def get_team():
 
 if __name__ == '__main__':
     # Testing getting tournament info
-    # while 0 != 1:
-    #     get_team_for_tournament()
-
+    while 0 != 1:
+        # get_team_for_tournament()
+        get_valorant_player()
 #     Testing API for players
-    get_team()
+#     get_team()
 
 # Testing
 # print("League Name: ", ValTournamentsDict[0]['league']['name'])
