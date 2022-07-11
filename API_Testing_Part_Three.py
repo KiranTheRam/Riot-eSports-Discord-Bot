@@ -35,13 +35,22 @@ def team_url_builder(game, search_param):
     return url
 
 
-# This will create the API URL for getting team information. Can have a search parameter
+# This will create the API URL for getting player information. Can have a search parameter
 def player_url_builder(game, search_param):
     if search_param:
         url = "https://api.pandascore.co/" + game + "/players?search[name]=" + search_param + "&sort=&page=1&per_page=50"
         return url
     url = "https://api.pandascore.co/" + game + "/players?sort=&page=1&per_page=50"
     return url
+
+
+# This will create the API URL for getting team information. Can have a search parameter
+# def url_builder(game, context, search_param):
+#     if search_param:
+#         url = "https://api.pandascore.co/" + game + "/players?search[name]=" + search_param + "&sort=&page=1&per_page=50"
+#         return url
+#     url = "https://api.pandascore.co/" + game + "/players?sort=&page=1&per_page=50"
+#     return url
 
 
 ###########################################################################################################
@@ -55,25 +64,16 @@ def get_player_info():
     url = player_url_builder(game, search_param)
     players_dict = build_dict(url)
 
-    print(players_dict)
-
-# TODO: make this more adaptable. A lot of these elements can report as none and will cause errors. By doing this we can also remove the need for 2 formats (lol & valorant)
-    if game == 'valorant':
-        for player in players_dict:
-            print(player['name'], ": ", player['first_name'], player['last_name'],
-                  "| Team: ", player['current_team']['name'],
-                  "| Age: ", player['age'],
-                  "| Hometown: ", player['hometown'],
-                  "| Nationality : ", player['nationality'],
-                  "| Image : ", player['image_url'])
-
-    if game == 'lol':
-        for player in players_dict:
-            print(player['name'], ": ", player['first_name'], player['last_name'],
-                  "| Team: ", player['current_team']['name'],
-                  "| Hometown: ", player['hometown'],
-                  "| Nationality : ", player['nationality'],
-                  "| Image : ", player['image_url'])
+    for player in players_dict:
+        print("\n", player['name'], ": ", player['first_name'], player['last_name'])
+        if player['current_team'] is not None:
+            print("| Team: " + player['current_team']['name'])
+        if player['hometown'] is not None:
+            print("| Hometown: ", player['hometown'])
+        if player['nationality'] is not None:
+            print("| Nationality : ", player['nationality'])
+        if player['image_url'] is not None:
+            print("| Image : ", player['image_url'])
 
 
 # Displays all the teams participating in tournaments. Can search for a specific tournament.
