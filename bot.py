@@ -7,11 +7,13 @@ load_dotenv()
 _token = os.getenv('TOKEN')
 _guild_id = os.getenv('DEFAULT_ENABLED_GUILD')
 
-
 bot = lightbulb.BotApp(
     token=_token,
     default_enabled_guilds=_guild_id
 )
+
+# Loading plugin
+bot.load_extensions_from('./extensions')
 
 
 @bot.listen(hikari.StartedEvent)
@@ -25,6 +27,13 @@ async def on_started(event):
 @lightbulb.implements(lightbulb.SlashCommand)
 async def command_name(ctx):  # all commands must take in a context object, commonly called ctx
     await ctx.respond('this is the reply the bot will display when triggered')
+
+# Another basic command with no input
+@bot.command()
+@lightbulb.command('classic', 'prints Hello World!')
+@lightbulb.implements(lightbulb.SlashCommand)
+async def command_name(ctx):  # all commands must take in a context object, commonly called ctx
+    await ctx.respond('Hello World')
 
 
 # This is a Slash Command Group. Means it has subcommands tht it runs
