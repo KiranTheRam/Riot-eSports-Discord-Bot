@@ -131,5 +131,5 @@ if __name__ == '__main__':
     #     get_player_info()
 
     # get_tournament_info()
-    get_team_info()
-    # get_player_info()
+    # get_team_info()
+    get_player_info()
