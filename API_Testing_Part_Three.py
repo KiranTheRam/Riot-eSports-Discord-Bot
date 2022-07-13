@@ -59,7 +59,7 @@ def url_builder(game, context, search_param):
 
 # Displays all the players. Can search for a specific player.
 def get_player_info():
-    game = input("Enter the game to search for: ")
+    game = 'lol'
     context = 'players'
     search_param = input("Enter a player to search for.\nLeave blank to see all players:  ")
     # url = player_url_builder(game, search_param)
@@ -67,15 +67,46 @@ def get_player_info():
     players_dict = build_dict(url)
 
     for player in players_dict:
-        print("\n", player['name'], ": ", player['first_name'], player['last_name'])
-        if player['current_team'] is not None:
-            print("| Team: " + player['current_team']['name'])
-        if player['hometown'] is not None:
-            print("| Hometown: ", player['hometown'])
-        if player['nationality'] is not None:
-            print("| Nationality : ", player['nationality'])
-        if player['image_url'] is not None:
-            print("| Image : ", player['image_url'])
+        # print("\n", player['name'], ": ", player['first_name'], player['last_name'])
+        # if player['current_team'] is not None:
+        #     print("| Team: " + player['current_team']['name'])
+        # if player['hometown'] is not None:
+        #     print("| Hometown: ", player['hometown'])
+        # if player['nationality'] is not None:
+        #     print("| Nationality : ", player['nationality'])
+        # if player['image_url'] is not None:
+        #     print("| Image : ", player['image_url'])
+        if 'name' in player:
+            print(player['name'])
+        else:
+            print('cant find the player')
+
+
+
+        # if 'name' in dict and player['name'] is not None:
+        #     game_name = player['name']
+        #     print(game_name)
+        # if 'first_name' in dict and player['first_name'] is not None:
+        #     name = player['first_name']
+        #     print(name)
+        # if 'last_name' in dict and player['last_name'] is not None:
+        #     name += " " + player['last_name']
+        #     print(name)
+        # if 'age' in dict and player['age'] is not None:
+        #     age = str(player['age'])
+        #     print(age)
+        # if 'birthday' in dict and player['birthday'] is not None:
+        #     birthday = player['birthday']
+        #     print(birthday)
+        # if 'current_team' in dict and player['current_team'] is not None:
+        #     current_team = player['current_team']['name']
+        #     print(current_team)
+        # if 'hometown' in dict and player['hometown'] is not None:
+        #     hometown = player['hometown']
+        #     print(hometown)
+        # if 'nationality' in dict and player['nationality'] is not None:
+        #     nationality = player['nationality']
+        #     print(nationality)
 
 
 # Displays all the teams participating in tournaments. Can search for a specific tournament.
