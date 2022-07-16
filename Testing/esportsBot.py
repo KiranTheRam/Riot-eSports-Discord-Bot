@@ -16,6 +16,7 @@ bot = lightbulb.BotApp(
 # Global Variables
 valorant_image_url = 'https://cdn.vox-cdn.com/thumbor/FJz0LeakZVB3NCy17LSHzeE8yX8=/1400x1400/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/19884649/VALORANT_Jett_Red_1_1.jpg'
 lol_image_url = 'https://static.wikia.nocookie.net/leagueoflegends/images/7/7b/League_of_Legends_Cover.jpg/revision/latest?cb=20191018222445'
+riot_image_url = 'https://www.riotgames.com/darkroom/800/87521fcaeca5867538ae7f46ac152740:2f8144e17957078916e41d2410c111c3/002-rg-2021-full-lockup-offwhite.jpg'
 
 
 # Section for API handling functions
@@ -65,12 +66,12 @@ async def valorant(ctx):
     # Only the subcommands can be run
 
 
-def create_player_embed(dict, game):
+def create_player_embed(passed_dict, game):
     # Function will return a list of embeds
     embed_list = []
 
-    if dict:  # if the dictionary is NOT empty
-        for player in dict:
+    if passed_dict:  # if the dictionary is NOT empty
+        for player in passed_dict:
             # Set all values to N/A
             game_name = "N/A"
             name = "N/A"
@@ -111,7 +112,6 @@ def create_player_embed(dict, game):
             print("Hometown: " + hometown)
             print("Nationality: " + nationality)
 
-
             # Try to get image of player
             if 'image_url' in player and player['image_url'] is not None:
                 image_url = player['image_url']
@@ -140,7 +140,78 @@ def create_player_embed(dict, game):
 
     else:  # If the dictionary IS empty
         embed = hikari.Embed(title='No Results Found', description='Please try again')
-        embed.set_thumbnail(valorant_image_url)
+        embed.set_thumbnail(riot_image_url)
+        embed_list.append(embed)
+        return embed_list
+
+    return embed_list
+
+
+def create_team_embed(passed_dict, game):
+    # Function will return a list of embeds
+    embed_list = []
+
+    print(passed_dict)
+
+    if passed_dict:  # if the dictionary is NOT empty
+        for team in passed_dict:
+            # Set all values to N/A
+            team_name = "N/A"
+            location = "N/A"
+
+            if game == 'valorant':
+                image_url = valorant_image_url
+            elif game == 'lol':
+                image_url = lol_image_url
+
+            # Test each value from dictionary and fill variable if it is available
+            if 'name' in team and team['name'] is not None:
+                team_name = team['name']
+                print(team_name)
+
+            if 'location' in team and team['location'] is not None:
+                location = team['location']
+
+            # Try to get image of team
+            if 'image_url' in team and team['image_url'] is not None:
+                image_url = team['image_url']
+
+            embed = hikari.Embed(title=team_name, colour='d22a36', description=("Based out of: " + location))
+            embed.set_footer("For more player info, use Player Search command")
+            embed.set_thumbnail(image_url)
+
+            player_name = "N/A"
+            player_real_name = "N/A"
+            player_age = "N/A"
+            counter = 0
+
+            for player in team['players']:
+                if 'name' in player and player['name'] is not None:
+                    player_name = player['name']
+                if 'first_name' in player and player['first_name'] is not None:
+                    player_real_name = player['first_name']
+                if 'last_name' in player and player['last_name'] is not None:
+                    player_real_name += " " + player['last_name']
+                if 'age' in player and player['age'] is not None:
+                    player_age = str(player['age'])
+
+                # player_info = player_real_name + "\nAge: " + player_age
+
+                embed.add_field(player_name, (player_real_name + "\nAge: " + player_age), inline=True)
+
+                # TODO: can this be replaced by using the index of a player within the team['players'] dict?
+                counter += 1
+                if counter % 2 != 0:
+                    embed.add_field('\u200b', '\u200b', inline=True)
+
+            embed_list.append(embed)
+
+            if len(embed_list) == 8:
+                return embed_list
+
+    else:  # If the dictionary IS empty
+        embed = hikari.Embed(title='No Results Found', description='Please try again')
+        embed.set_thumbnail(riot_image_url)
         embed_list.append(embed)
         return embed_list
 
@@ -152,81 +223,11 @@ def create_player_embed(dict, game):
 @lightbulb.command('player_search', 'Get information about a professional Valorant player')
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def val_player_search(ctx):
-
     url = url_builder('valorant', 'players', ctx.options.player_name)
     players_dict = build_dict(url)
-    # print(players_dict)
     embed_list = create_player_embed(players_dict, 'valorant')
-
     for embed in embed_list:
-        # print(embed)
-        await ctx.respond(embed)  # or respond(embed=embed)
-
-    # url = url_builder('valorant', 'players', ctx.options.player_name)
-    # players_dict = build_dict(url)
-    # results_printed = 0
-    #
-    # if players_dict:  # if the dictionary is NOT empty
-    #     for player in players_dict:
-    #         if results_printed == 8:
-    #             break
-    #
-    #         # Set all values to N/A
-    #         game_name = "N/A"
-    #         name = "N/A"
-    #         current_team = "N/A"
-    #         hometown = "N/A"
-    #         nationality = "N/A"
-    #         age = "N/A"
-    #         birthday = "N/A"
-    #         image_url = valorant_image_url
-    #
-    #         # Test each value from dictionary and fill variable if it is available
-    #         if player['name'] is not None:
-    #             game_name = player['name']
-    #         if player['first_name'] is not None:
-    #             name = player['first_name']
-    #         if player['last_name'] is not None:
-    #             name += " " + player['last_name']
-    #         if player['age'] is not None:
-    #             age = str(player['age'])
-    #         if player['birthday'] is not None:
-    #             birthday = player['birthday']
-    #         if player['current_team'] is not None:
-    #             current_team = player['current_team']['name']
-    #         if player['hometown'] is not None:
-    #             hometown = player['hometown']
-    #         if player['nationality'] is not None:
-    #             nationality = player['nationality']
-    #
-    #         # Try to get image of player
-    #         if player['image_url'] is not None:
-    #             image_url = player['image_url']
-    #         # If player image isn't available, get image of team instead
-    #         elif player['current_team'] is not None:
-    #             if player['current_team']['image_url'] is not None:
-    #                 image_url = player['current_team']['image_url']
-    #
-    #         # For each player found, send an embed
-    #         # TODO: Possibly change this to a single embed with pages?
-    #         embed = hikari.Embed(title=game_name)
-    #         embed.add_field("Name", name, inline=True)
-    #         embed.add_field('\u200b', '\u200b', inline=True)
-    #         embed.add_field("Team", current_team, inline=True)
-    #         embed.add_field('Age', age, inline=True)
-    #         embed.add_field('\u200b', '\u200b', inline=True)
-    #         embed.add_field("Birthday", birthday, inline=True)
-    #         embed.add_field("Hometown", hometown, inline=True)
-    #         embed.add_field('\u200b', '\u200b', inline=True)
-    #         embed.add_field("Nationality", nationality, inline=True)
-    #         embed.set_thumbnail(image_url)
-    #         await ctx.respond(embed)  # or respond(embed=embed)
-    #         results_printed += 1
-    #
-    # else:  # If the dictionary IS empty
-    #     embed = hikari.Embed(title='No Results Found', description='Please try again')
-    #     embed.set_thumbnail(valorant_image_url)
-    #     await ctx.respond(embed)  # or respond(embed=embed)
+        await ctx.respond(embed)
 
 
 @valorant.child()
@@ -234,7 +235,11 @@ async def val_player_search(ctx):
 @lightbulb.command('team_search', 'Get information about a professional Valorant team')
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def val_team_search(ctx):
-    await ctx.respond('You searched for team: ' + ctx.options.team_name)
+    url = url_builder('valorant', 'teams', ctx.options.team_name)
+    team_dict = build_dict(url)
+    embed_list = create_team_embed(team_dict, 'valorant')
+    for embed in embed_list:
+        await ctx.respond(embed)
 
 
 @valorant.child()
@@ -261,15 +266,8 @@ async def lol_player_search(ctx):
     players_dict = build_dict(url)
     print(players_dict)
     embed_list = create_player_embed(players_dict, 'lol')
-
-    # print("\nEmbed List:")
-    # print(embed_list)
-
     for embed in embed_list:
-        # print("\nEmbed:")
-        # print(embed)
-
-        await ctx.respond(embed)  # or respond(embed=embed)
+        await ctx.respond(embed)
 
 
 @league.child()
