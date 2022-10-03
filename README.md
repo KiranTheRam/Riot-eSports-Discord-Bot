@@ -2,7 +2,7 @@
 Discord bot built wth Hikari and Lightbulb that provides professional tournament, team, and information.
 
 # Dependencies
-Use pip to install hikari and hikari-lightbuld 
+Use pip to install hikari and hikari-lightbulb
 
 # Usage
 First create a .env file wherever you save the esportsBoy.py fil and set up your TOKEN.
