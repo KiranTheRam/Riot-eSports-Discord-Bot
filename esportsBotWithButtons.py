@@ -44,7 +44,7 @@ async def val_player_search(ctx):
     players_dict = build_dict(url)
     # Parse dict and create embeds for the first 8 results
     embed_list = create_player_embed(players_dict, 'valorant')
-    # crate a navigator message, iwth the embeds and a set of custom buttons
+    # crate a navigator message, with the embeds and a set of custom buttons
     navigator = nav.NavigatorView(pages=embed_list, buttons=nav_buttons_generator())
     # Send the navigator in response to command call
     await navigator.send(ctx.interaction)
@@ -109,6 +109,173 @@ async def lol_team_search(ctx):
 async def tournament_search(ctx):
     await ctx.respond('You searched for tournament: ' + ctx.options.tournament_name)
 
+
+# -------------------------------------------------------
+
+@bot.command()
+@lightbulb.command('overwatch', 'All commands referring to Overwatch')
+@lightbulb.implements(lightbulb.SlashCommandGroup)
+async def overwatch(ctx):
+    pass
+
+
+@overwatch.child()
+@lightbulb.option('player_name', 'Player you want to search for')
+@lightbulb.command('player_search', 'Get information about a professional League player')
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def ow_player_search(ctx):
+    url = url_builder('ow', 'players', ctx.options.player_name)
+    players_dict = build_dict(url)
+    print(players_dict)
+    embed_list = create_player_embed(players_dict, 'ow')
+    navigator = nav.NavigatorView(pages=embed_list, buttons=nav_buttons_generator())
+    await navigator.send(ctx.interaction)
+
+
+@overwatch.child()
+@lightbulb.option('team_name', 'Team you want to search for')
+@lightbulb.command('team_search', 'Get information about a professional League team')
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def ow_team_search(ctx):
+    url = url_builder('ow', 'teams', ctx.options.team_name)
+    team_dict = build_dict(url)
+    embed_list = create_team_embed(team_dict, 'ow')
+    navigator = nav.NavigatorView(pages=embed_list, buttons=nav_buttons_generator())
+    await navigator.send(ctx.interaction)
+
+
+@overwatch.child()
+@lightbulb.option('tournament_name', 'Tournament you want to search for')
+@lightbulb.command('tournament_search', 'Get information about a League tournament')
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def ow_tournament_search(ctx):
+    await ctx.respond('You searched for tournament: ' + ctx.options.tournament_name)
+
+
+# -------------------------------------------------------
+
+@bot.command()
+@lightbulb.command('csgo', 'All commands referring to Counter Strike: Global Offensive')
+@lightbulb.implements(lightbulb.SlashCommandGroup)
+async def csgo(ctx):
+    pass
+
+
+@csgo.child()
+@lightbulb.option('player_name', 'Player you want to search for')
+@lightbulb.command('player_search', 'Get information about a professional CSGO player')
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def csgo_player_search(ctx):
+    url = url_builder('csgo', 'players', ctx.options.player_name)
+    players_dict = build_dict(url)
+    print(players_dict)
+    embed_list = create_player_embed(players_dict, 'csgo')
+    navigator = nav.NavigatorView(pages=embed_list, buttons=nav_buttons_generator())
+    await navigator.send(ctx.interaction)
+
+
+@csgo.child()
+@lightbulb.option('team_name', 'Team you want to search for')
+@lightbulb.command('team_search', 'Get information about a professional CSGO team')
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def csgo_team_search(ctx):
+    url = url_builder('csgo', 'teams', ctx.options.team_name)
+    team_dict = build_dict(url)
+    embed_list = create_team_embed(team_dict, 'csgo')
+    navigator = nav.NavigatorView(pages=embed_list, buttons=nav_buttons_generator())
+    await navigator.send(ctx.interaction)
+
+
+@csgo.child()
+@lightbulb.option('tournament_name', 'Tournament you want to search for')
+@lightbulb.command('tournament_search', 'Get information about a CSGO tournament')
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def csgo_tournament_search(ctx):
+    await ctx.respond('You searched for tournament: ' + ctx.options.tournament_name)
+
+
+# -------------------------------------------------------
+
+@bot.command()
+@lightbulb.command('r6siege', 'All commands referring to Rainbow 6 Siege')
+@lightbulb.implements(lightbulb.SlashCommandGroup)
+async def r6siege(ctx):
+    pass
+
+
+@r6siege.child()
+@lightbulb.option('player_name', 'Player you want to search for')
+@lightbulb.command('player_search', 'Get information about a professional Rainbow 6 Siege player')
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def r6siege_player_search(ctx):
+    url = url_builder('r6siege', 'players', ctx.options.player_name)
+    players_dict = build_dict(url)
+    print(players_dict)
+    embed_list = create_player_embed(players_dict, 'r6siege')
+    navigator = nav.NavigatorView(pages=embed_list, buttons=nav_buttons_generator())
+    await navigator.send(ctx.interaction)
+
+
+@r6siege.child()
+@lightbulb.option('team_name', 'Team you want to search for')
+@lightbulb.command('team_search', 'Get information about a professional Rainbow 6 Siege team')
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def r6siege_team_search(ctx):
+    url = url_builder('r6siege', 'teams', ctx.options.team_name)
+    team_dict = build_dict(url)
+    embed_list = create_team_embed(team_dict, 'r6siege')
+    navigator = nav.NavigatorView(pages=embed_list, buttons=nav_buttons_generator())
+    await navigator.send(ctx.interaction)
+
+
+@r6siege.child()
+@lightbulb.option('tournament_name', 'Tournament you want to search for')
+@lightbulb.command('tournament_search', 'Get information about a Rainbow 6 Siege tournament')
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def r6siege_tournament_search(ctx):
+    await ctx.respond('You searched for tournament: ' + ctx.options.tournament_name)
+
+
+# -------------------------------------------------------
+
+@bot.command()
+@lightbulb.command('rl', 'All commands referring to Rocket League')
+@lightbulb.implements(lightbulb.SlashCommandGroup)
+async def rl(ctx):
+    pass
+
+
+@rl.child()
+@lightbulb.option('player_name', 'Player you want to search for')
+@lightbulb.command('player_search', 'Get information about a professional Rocket League player')
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def rl_player_search(ctx):
+    url = url_builder('rl', 'players', ctx.options.player_name)
+    players_dict = build_dict(url)
+    print(players_dict)
+    embed_list = create_player_embed(players_dict, 'rl')
+    navigator = nav.NavigatorView(pages=embed_list, buttons=nav_buttons_generator())
+    await navigator.send(ctx.interaction)
+
+
+@rl.child()
+@lightbulb.option('team_name', 'Team you want to search for')
+@lightbulb.command('team_search', 'Get information about a professional Rocket League team')
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def rl_team_search(ctx):
+    url = url_builder('rl', 'teams', ctx.options.team_name)
+    team_dict = build_dict(url)
+    embed_list = create_team_embed(team_dict, 'rl')
+    navigator = nav.NavigatorView(pages=embed_list, buttons=nav_buttons_generator())
+    await navigator.send(ctx.interaction)
+
+
+@rl.child()
+@lightbulb.option('tournament_name', 'Tournament you want to search for')
+@lightbulb.command('tournament_search', 'Get information about a Rocket League tournament')
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def r6siege_tournament_search(ctx):
+    await ctx.respond('You searched for tournament: ' + ctx.options.tournament_name)
 
 
 if __name__ == '__main__':

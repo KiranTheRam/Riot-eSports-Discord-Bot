@@ -4,7 +4,14 @@ import requests
 
 valorant_image_url = 'https://cdn.vox-cdn.com/thumbor/FJz0LeakZVB3NCy17LSHzeE8yX8=/1400x1400/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/19884649/VALORANT_Jett_Red_1_1.jpg'
 lol_image_url = 'https://static.wikia.nocookie.net/leagueoflegends/images/7/7b/League_of_Legends_Cover.jpg/revision/latest?cb=20191018222445'
-riot_image_url = 'https://www.riotgames.com/darkroom/800/87521fcaeca5867538ae7f46ac152740:2f8144e17957078916e41d2410c111c3/002-rg-2021-full-lockup-offwhite.jpg'
+default_image_url = 'https://www.riotgames.com/darkroom/800/87521fcaeca5867538ae7f46ac152740:2f8144e17957078916e41d2410c111c3/002-rg-2021-full-lockup-offwhite.jpg'
+
+riot_red = 'd22a36'
+cs_yellow = 'de9b35'
+ow_orange = 'f99e1a'
+r6_white = 'ffffff'
+rl_blue = '0060ff'
+default_color = '1DB954'
 
 
 # Section for API handling functions
@@ -17,6 +24,7 @@ def build_dict(url):
     }
     response = requests.get(url, headers=headers)
     working_dict = json.loads(response.text)
+    print(working_dict)
     return working_dict
 
 
@@ -38,6 +46,47 @@ def url_builder(game, context, search_param):
     return url
 
 
+def color_picker(game):
+    if game == 'valorant':
+        image_url = valorant_image_url
+        return riot_red
+    elif game == 'lol':
+        image_url = lol_image_url
+        return riot_red
+    elif game == 'ow':
+        image_url = lol_image_url
+        return ow_orange
+    elif game == 'csgo':
+        image_url = lol_image_url
+        return cs_yellow
+    elif game == 'r6siege':
+        image_url = lol_image_url
+        return r6_white
+    elif game == 'rl':
+        image_url = lol_image_url
+        return rl_blue
+    else:
+        image_url = lol_image_url
+        return default_color
+
+
+def image_picker(game):
+    if game == 'valorant':
+        return valorant_image_url
+    elif game == 'lol':
+        return lol_image_url
+    elif game == 'ow':
+        return lol_image_url
+    elif game == 'csgo':
+        return lol_image_url
+    elif game == 'r6siege':
+        return lol_image_url
+    elif game == 'rl':
+        return lol_image_url
+    else:
+        return default_color
+
+
 def create_player_embed(passed_dict, game):
     # Function will return a list of embeds
     embed_list = []
@@ -53,10 +102,8 @@ def create_player_embed(passed_dict, game):
             age = "N/A"
             birthday = "N/A"
 
-            if game == 'valorant':
-                image_url = valorant_image_url
-            elif game == 'lol':
-                image_url = lol_image_url
+            color = color_picker(game)
+            image_url = image_picker(game)
 
             # Test each value from dictionary and fill variable if it is available
             if 'name' in player and player['name'] is not None:
@@ -92,9 +139,7 @@ def create_player_embed(passed_dict, game):
                 if player['current_team']['image_url'] is not None:
                     image_url = player['current_team']['image_url']
 
-            # For each player found, send an embed
-            # TODO: Possibly change this to a single embed with pages?
-            embed = hikari.Embed(title=game_name, colour='d22a36')
+            embed = hikari.Embed(title=game_name, colour=color)
             embed.add_field("Name", name, inline=True)
             embed.add_field('\u200b', '\u200b', inline=True)
             embed.add_field("Team", current_team, inline=True)
@@ -110,7 +155,7 @@ def create_player_embed(passed_dict, game):
 
     else:  # If the dictionary IS empty
         embed = hikari.Embed(title='No Results Found', description='Please try again')
-        embed.set_thumbnail(riot_image_url)
+        embed.set_thumbnail(default_image_url)
         embed_list.append(embed)
         return embed_list
 
@@ -127,10 +172,8 @@ def create_team_embed(passed_dict, game):
             team_name = "N/A"
             location = "N/A"
 
-            if game == 'valorant':
-                image_url = valorant_image_url
-            elif game == 'lol':
-                image_url = lol_image_url
+            color = color_picker(game)
+            image_url = image_picker(game)
 
             # Test each value from dictionary and fill variable if it is available
             if 'name' in team and team['name'] is not None:
@@ -174,7 +217,7 @@ def create_team_embed(passed_dict, game):
 
     else:  # If the dictionary IS empty
         embed = hikari.Embed(title='No Results Found', description='Please try again')
-        embed.set_thumbnail(riot_image_url)
+        embed.set_thumbnail(default_image_url)
         embed_list.append(embed)
         return embed_list
 
