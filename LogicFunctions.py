@@ -186,7 +186,7 @@ def create_team_embed(passed_dict, game):
             if 'image_url' in team and team['image_url'] is not None:
                 image_url = team['image_url']
 
-            embed = hikari.Embed(title=team_name, colour='d22a36', description=("Based out of: " + location))
+            embed = hikari.Embed(title=team_name, colour=color, description=("Based out of: " + location))
             embed.set_footer("For more player info, use Player Search command\nN/A = Not Available")
             embed.set_thumbnail(image_url)
 
