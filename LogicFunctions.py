@@ -2,9 +2,13 @@ import hikari
 import json
 import requests
 
-valorant_image_url = 'https://cdn.vox-cdn.com/thumbor/FJz0LeakZVB3NCy17LSHzeE8yX8=/1400x1400/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/19884649/VALORANT_Jett_Red_1_1.jpg'
-lol_image_url = 'https://static.wikia.nocookie.net/leagueoflegends/images/7/7b/League_of_Legends_Cover.jpg/revision/latest?cb=20191018222445'
-default_image_url = 'https://www.riotgames.com/darkroom/800/87521fcaeca5867538ae7f46ac152740:2f8144e17957078916e41d2410c111c3/002-rg-2021-full-lockup-offwhite.jpg'
+default_image = 'images/default.jpg'
+valorant_image = 'images/valorant.png'
+lol_image = 'images/league.png'
+ow_image = 'images/ow.jpg'
+csgo_image = 'images/csgo.jpg'
+r6s_image = 'images/r6s.jpg'
+rl_image = 'images/rl.jpg'
 
 riot_red = 'd22a36'
 cs_yellow = 'de9b35'
@@ -14,8 +18,6 @@ rl_blue = '0060ff'
 default_color = '1DB954'
 
 
-# Section for API handling functions
-
 # This will build a dictionary based on the URL given and JSON returned
 def build_dict(url):
     headers = {
@@ -24,70 +26,54 @@ def build_dict(url):
     }
     response = requests.get(url, headers=headers)
     working_dict = json.loads(response.text)
-    print(working_dict)
     return working_dict
 
 
-# This will create the API URL for running tournaments based on a search parameter if there is one
-def tournament_url_builder(game, search_param):
-    if search_param:
-        url = "https://api.pandascore.co/" + game + "/tournaments/running?search[slug]=" + search_param + "&sort=&page=1&per_page=50"
-        return url
-    url = "https://api.pandascore.co/" + game + "/tournaments/running?sort=&page=1&per_page=50"
+def url_builder(game, context, search_param):
+    url = "https://api.pandascore.co/" + game + "/" + context + "?search[name]=" + search_param + "&sort=&page=1&per_page=50"
     return url
 
 
-# This will be the universal API URL builder.
-def url_builder(game, context, search_param):
-    if search_param:
-        url = "https://api.pandascore.co/" + game + "/" + context + "?search[name]=" + search_param + "&sort=&page=1&per_page=50"
-        return url
-    url = "https://api.pandascore.co/" + game + "/players?sort=&page=1&per_page=50"
+def tournament_url_builder(game, search_param):
+    url = "https://api.pandascore.co/" + game + "/tournaments/running?search[slug]=" + search_param + "&sort=&page=1&per_page=50"
     return url
 
 
 def color_picker(game):
     if game == 'valorant':
-        image_url = valorant_image_url
         return riot_red
     elif game == 'lol':
-        image_url = lol_image_url
         return riot_red
     elif game == 'ow':
-        image_url = lol_image_url
         return ow_orange
     elif game == 'csgo':
-        image_url = lol_image_url
         return cs_yellow
     elif game == 'r6siege':
-        image_url = lol_image_url
         return r6_white
     elif game == 'rl':
-        image_url = lol_image_url
         return rl_blue
     else:
-        image_url = lol_image_url
         return default_color
 
 
 def image_picker(game):
     if game == 'valorant':
-        return valorant_image_url
+        return valorant_image
     elif game == 'lol':
-        return lol_image_url
+        return lol_image
     elif game == 'ow':
-        return lol_image_url
+        return ow_image
     elif game == 'csgo':
-        return lol_image_url
+        return csgo_image
     elif game == 'r6siege':
-        return lol_image_url
+        return r6s_image
     elif game == 'rl':
-        return lol_image_url
+        return rl_image
     else:
-        return default_color
+        return default_image
 
 
-def create_player_embed(passed_dict, game):
+def create_player_embed_all(passed_dict, game, search_term):
     # Function will return a list of embeds
     embed_list = []
 
@@ -97,7 +83,6 @@ def create_player_embed(passed_dict, game):
             game_name = "N/A"
             name = "N/A"
             current_team = "N/A"
-            hometown = "N/A"
             nationality = "N/A"
             age = "N/A"
             birthday = "N/A"
@@ -118,18 +103,10 @@ def create_player_embed(passed_dict, game):
                 birthday = player['birthday']
             if 'current_team' in player and player['current_team'] is not None:
                 current_team = player['current_team']['name']
-            if 'hometown' in player and player['hometown'] is not None:
-                hometown = player['hometown']
+            # if 'hometown' in player and player['hometown'] is not None:
+            #     hometown = player['hometown']
             if 'nationality' in player and player['nationality'] is not None:
                 nationality = player['nationality']
-
-            # print("\nGamer Name: " + game_name)
-            # print("Name: " + name)
-            # print("Age: " + age)
-            # print("Birthday: " + birthday)
-            # print("Team: " + current_team)
-            # print("Hometown: " + hometown)
-            # print("Nationality: " + nationality)
 
             # Try to get image of player
             if 'image_url' in player and player['image_url'] is not None:
@@ -146,23 +123,132 @@ def create_player_embed(passed_dict, game):
             embed.add_field('Age', age, inline=True)
             embed.add_field('\u200b', '\u200b', inline=True)
             embed.add_field("Birthday", birthday, inline=True)
-            embed.add_field("Hometown", hometown, inline=True)
-            embed.add_field('\u200b', '\u200b', inline=True)
             embed.add_field("Nationality", nationality, inline=True)
-            embed.set_footer('N/A = Not Available')
+            embed.set_footer("Searched for: " + search_term + "\nN/A = Not Available")
             embed.set_thumbnail(image_url)
             embed_list.append(embed)
 
     else:  # If the dictionary IS empty
         embed = hikari.Embed(title='No Results Found', description='Please try again')
-        embed.set_thumbnail(default_image_url)
+        embed.set_thumbnail(default_image)
         embed_list.append(embed)
         return embed_list
 
     return embed_list
 
 
-def create_team_embed(passed_dict, game):
+def create_player_embed_partial(passed_dict, game, search_term):
+    # Function will return a list of embeds
+    embed_list = []
+
+    if passed_dict:  # if the dictionary is NOT empty
+        for player in passed_dict:
+            # Set all values to N/A
+            game_name = "N/A"
+            name = "N/A"
+            current_team = "N/A"
+            nationality = "N/A"
+
+            color = color_picker(game)
+            image_url = image_picker(game)
+
+            # Test each value from dictionary and fill variable if it is available
+            if 'name' in player and player['name'] is not None:
+                game_name = player['name']
+            if 'first_name' in player and player['first_name'] is not None:
+                name = player['first_name']
+            if 'last_name' in player and player['last_name'] is not None:
+                name += " " + player['last_name']
+            if 'current_team' in player and player['current_team'] is not None:
+                current_team = player['current_team']['name']
+            if 'nationality' in player and player['nationality'] is not None:
+                nationality = player['nationality']
+
+            # Try to get image of player
+            if 'image_url' in player and player['image_url'] is not None:
+                image_url = player['image_url']
+            # If player image isn't available, get image of team instead
+            elif 'current_team' in player and player['current_team'] is not None:
+                if player['current_team']['image_url'] is not None:
+                    image_url = player['current_team']['image_url']
+
+            embed = hikari.Embed(title=game_name, colour=color)
+            embed.add_field("Name", name, inline=True)
+            embed.add_field('\u200b', '\u200b', inline=True)
+            embed.add_field("Team", current_team, inline=True)
+            embed.add_field("Nationality", nationality, inline=True)
+            embed.set_footer("Searched for: " + search_term + " \nN/A = Not Available")
+            embed.set_thumbnail(image_url)
+            embed_list.append(embed)
+
+    else:  # If the dictionary IS empty
+        embed = hikari.Embed(title='No Results Found', description='Please try again')
+        embed.set_thumbnail(default_image)
+        embed_list.append(embed)
+        return embed_list
+
+    return embed_list
+
+
+def create_player_role(passed_dict, game, search_term):
+    # Function will return a list of embeds
+    embed_list = []
+
+    if passed_dict:  # if the dictionary is NOT empty
+        for player in passed_dict:
+            # Set all values to N/A
+            game_name = "N/A"
+            name = "N/A"
+            current_team = "N/A"
+            role = "N/A"
+            nationality = "N/A"
+
+            color = color_picker(game)
+            image_url = image_picker(game)
+
+            # Test each value from dictionary and fill variable if it is available
+            if 'name' in player and player['name'] is not None:
+                game_name = player['name']
+            if 'first_name' in player and player['first_name'] is not None:
+                name = player['first_name']
+            if 'last_name' in player and player['last_name'] is not None:
+                name += " " + player['last_name']
+            if 'current_team' in player and player['current_team'] is not None:
+                current_team = player['current_team']['name']
+            if 'role' in player and player['role'] is not None:
+                role = player['role']
+            if 'nationality' in player and player['nationality'] is not None:
+                nationality = player['nationality']
+
+            # Try to get image of player
+            if 'image_url' in player and player['image_url'] is not None:
+                image_url = player['image_url']
+            # If player image isn't available, get image of team instead
+            elif 'current_team' in player and player['current_team'] is not None:
+                if player['current_team']['image_url'] is not None:
+                    image_url = player['current_team']['image_url']
+
+            embed = hikari.Embed(title=game_name, colour=color)
+            embed.add_field("Name", name, inline=True)
+            embed.add_field('\u200b', '\u200b', inline=True)
+            embed.add_field("Team", current_team, inline=True)
+            embed.add_field("Role", role, inline=True)
+            embed.add_field('\u200b', '\u200b', inline=True)
+            embed.add_field("Nationality", nationality, inline=True)
+            embed.set_footer("Searched for: " + search_term + " \nN/A = Not Available")
+            embed.set_thumbnail(image_url)
+            embed_list.append(embed)
+
+    else:  # If the dictionary IS empty
+        embed = hikari.Embed(title='No Results Found', description='Please try again')
+        embed.set_thumbnail(default_image)
+        embed_list.append(embed)
+        return embed_list
+
+    return embed_list
+
+
+def create_team_embed(passed_dict, game, search_term):
     # Function will return a list of embeds
     embed_list = []
 
@@ -187,7 +273,7 @@ def create_team_embed(passed_dict, game):
                 image_url = team['image_url']
 
             embed = hikari.Embed(title=team_name, colour=color, description=("Based out of: " + location))
-            embed.set_footer("For more player info, use Player Search command\nN/A = Not Available")
+            embed.set_footer("Searched for: " + search_term + " \nN/A = Not Available")
             embed.set_thumbnail(image_url)
 
             player_name = "N/A"
@@ -206,18 +292,52 @@ def create_team_embed(passed_dict, game):
                     player_age = str(player['age'])
 
                 embed.add_field(player_name, (player_real_name + "\nAge: " + player_age), inline=True)
-
-                # TODO: can this be replaced by using the index of a player within the team['players'] dict?
                 counter += 1
                 if counter % 2 != 0:
                     embed.add_field('\u200b', '\u200b', inline=True)
 
             embed_list.append(embed)
 
+    else:  # If the dictionary IS empty
+        embed = hikari.Embed(title='No Results Found', description='Please try again')
+        embed.set_thumbnail(default_image)
+        embed_list.append(embed)
+        return embed_list
+
+    return embed_list
+
+
+def create_tournament_embed(passed_dict, game, search_term):
+    embed_list = []
+
+    if passed_dict:  # if the dictionary is NOT empty
+        for tournament in passed_dict:
+            color = color_picker(game)
+            image_url = image_picker(game)
+
+            # Test each value from dictionary and fill variable if it is available
+            if 'name' in tournament['serie'] is not None:
+                tournament_name = tournament['serie']['full_name']
+
+            match_list = []
+
+            for match in tournament['matches']:
+                name = match['name']
+                status = match['status']
+                date = match['scheduled_at']
+                match_list.append(
+                    name + "\u1CBC | \u1CBC" + status + "\u1CBC | \u1CBC" + date[:10])
+
+            list_str = '\n\n'.join(match_list)
+            embed = hikari.Embed(title=tournament_name, colour=color, description=list_str)
+            embed.set_footer("Searched for: " + search_term + " \nN/A = Not Available")
+            embed.set_thumbnail(image_url)
+            match_list.clear()
+            embed_list.append(embed)
 
     else:  # If the dictionary IS empty
         embed = hikari.Embed(title='No Results Found', description='Please try again')
-        embed.set_thumbnail(default_image_url)
+        embed.set_thumbnail(default_image)
         embed_list.append(embed)
         return embed_list
 

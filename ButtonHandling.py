@@ -2,6 +2,7 @@ import hikari
 import miru
 from miru.ext import nav
 
+
 class MyNavButton(nav.NavButton):
     # This is how you can create your own navigator button
     # The extension also comes with the following nav buttons built-in:
@@ -19,8 +20,7 @@ class MyNavButton(nav.NavButton):
     async def before_page_change(self) -> None:
         # This function is called before the new page is sent by
         # NavigatorView.send_page()
-        self.label = f"Page: {self.view.current_page+1} / {len(self.view.pages)}"
-
+        self.label = f"Page: {self.view.current_page + 1} / {len(self.view.pages)}"
 
 
 def nav_buttons_generator():
@@ -30,8 +30,6 @@ def nav_buttons_generator():
         MyNavButton(label="Page: 1", disabled=True, style=hikari.ButtonStyle.SECONDARY),
         nav.NextButton(style=hikari.ButtonStyle.SECONDARY, emoji='', label='>'),
         nav.LastButton(style=hikari.ButtonStyle.SECONDARY, emoji='', label='>>'),
-        # nav.StopButton(emoji='', label='X')
     ]
 
     return buttons
-
