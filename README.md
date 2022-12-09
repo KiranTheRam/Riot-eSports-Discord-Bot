@@ -13,7 +13,7 @@ Discord bot built wth Hikari and Lightbulb that provides professional tournament
 > pip install hikari-miru  
 
 - python-dotenv  
-'''pip install python-dotenv  '''
+'''pip install python-dotenv'''
 
 # Usage
 First create a .env file wherever you save the esportsBoy.py fil and set up your TOKEN.
