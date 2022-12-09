@@ -22,7 +22,7 @@ default_color = '1DB954'
 def build_dict(url):
     headers = {
         "Accept": "application/json",
-        "Authorization": "Bearer 13tgKXTDBY-RKazKMm3RArrw-K5BDYOAwxBfTtC_yFgejoHieKU"
+        "Authorization": "Bearer "
     }
     response = requests.get(url, headers=headers)
     working_dict = json.loads(response.text)
