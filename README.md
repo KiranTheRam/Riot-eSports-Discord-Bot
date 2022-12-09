@@ -16,5 +16,5 @@ Discord bot built wth Hikari and Lightbulb that provides professional tournament
 
 # Usage
 First create a .env file to the project's root directory. Add a field for your token, supplied by discord.  
-Next open the logicfunctions.py and add your Bearer token from PandaScore.  
-Next run ```python esportsBotwithButtons.py``` to start the bot
+Next open the LogicFunctions.py and add your Bearer token from PandaScore.  
+Next run ```python3 esportsBotWithButtons.py``` to start the bot
